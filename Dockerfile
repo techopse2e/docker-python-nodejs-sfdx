@@ -17,4 +17,5 @@ RUN \
   mkdir sfdx && \
   wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1 && \
   ./sfdx/install && \
-  rm -rf sfdx
+  rm -rf sfdx && \
+  pip install requests
