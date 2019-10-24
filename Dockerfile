@@ -18,4 +18,4 @@ RUN \
   wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1 && \
   ./sfdx/install && \
   rm -rf sfdx && \
-  pip install requests
+  pip install requests xmltodict url-normalize
