@@ -1,5 +1,6 @@
 FROM python:buster
 
+ARG DX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
 # Install node prereqs, nodejs and yarn
 # Ref: https://deb.nodesource.com/setup_12.x
 # Ref: https://yarnpkg.com/en/docs/install
@@ -12,7 +13,12 @@ RUN \
   apt-get install -yqq nodejs yarn && \
   pip install -U pip && pip install pipenv && \
   npm i -g npm@^6 && \
-  rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/* && \
+  mkdir sfdx && \
+  wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1 && \
+  ./sfdx/install && \
+  rm -rf sfdx && \
+  pip install requests xmltodict url-normalize
 
 #Install Ruby
 RUN \
@@ -23,7 +29,7 @@ RUN \
   /usr/local/rvm/bin/rvm install 2.6.3 && \
   /usr/local/rvm/bin/rvm use 2.6.3 --default && \
   apt-get install rubygems -y
-  
+
 # Install Chrome WebDriver
 RUN CHROMEDRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE` && \
     mkdir -p /opt/chromedriver-$CHROMEDRIVER_VERSION && \
