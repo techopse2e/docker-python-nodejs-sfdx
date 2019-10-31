@@ -1,6 +1,5 @@
 FROM python:buster
 
-ARG DX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
 # Install node prereqs, nodejs and yarn
 # Ref: https://deb.nodesource.com/setup_12.x
 # Ref: https://yarnpkg.com/en/docs/install
@@ -10,15 +9,11 @@ RUN \
   echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list && \
   wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
   apt-get update && \
+  apt-get install rubygems &&\
   apt-get install -yqq nodejs yarn && \
   pip install -U pip && pip install pipenv && \
   npm i -g npm@^6 && \
-  rm -rf /var/lib/apt/lists/* && \
-  mkdir sfdx && \
-  wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1 && \
-  ./sfdx/install && \
-  rm -rf sfdx && \
-  pip install requests xmltodict url-normalize
+  rm -rf /var/lib/apt/lists/*
 
 #Install Ruby
 RUN \
@@ -27,8 +22,7 @@ RUN \
   gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB && \
   curl -sSL https://get.rvm.io | bash -s stable && \
   /usr/local/rvm/bin/rvm install 2.6.3 && \
-  /usr/local/rvm/bin/rvm use 2.6.3 --default &&\
-  apt-get install rubygems
+  /usr/local/rvm/bin/rvm use 2.6.3 --default
 
 # Install Chrome WebDriver
 RUN CHROMEDRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE` && \
