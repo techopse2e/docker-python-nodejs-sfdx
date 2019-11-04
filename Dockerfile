@@ -13,6 +13,8 @@ RUN \
     pip install pipenv && \
     pip install requests xmltodict url-normalize
 
+RUN rm /usr/bin/python && ln -s ~/.pyenv/versions/3.7.3/bin/python /usr/bin/python
+
 # Install node prereqs, nodejs and yarn
 # Ref: https://deb.nodesource.com/setup_12.x
 # Ref: https://yarnpkg.com/en/docs/install
