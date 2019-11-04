@@ -1,6 +1,18 @@
-FROM python:buster
+FROM ruby:2.6.3
 
 ARG DX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+ENV PATH $PATH:/root/.pyenv/bin:/root/.pyenv/versions/3.7.3/bin
+
+#install Python
+RUN \
+    apt update && \
+    apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev git && \
+    curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash && \
+    pyenv install 3.7.3 && \
+    pip install --upgrade pip && \
+    pip install pipenv && \
+    pip install requests xmltodict url-normalize
+
 # Install node prereqs, nodejs and yarn
 # Ref: https://deb.nodesource.com/setup_12.x
 # Ref: https://yarnpkg.com/en/docs/install
@@ -11,24 +23,12 @@ RUN \
   wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
   apt-get update && \
   apt-get install -yqq nodejs yarn && \
-  pip install -U pip && pip install pipenv && \
   npm i -g npm@^6 && \
   rm -rf /var/lib/apt/lists/* && \
   mkdir sfdx && \
   wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1 && \
   ./sfdx/install && \
-  rm -rf sfdx && \
-  pip install requests xmltodict url-normalize
-
-#Install Ruby
-RUN \
-  apt update && \
-  apt install curl g++ gcc autoconf automake bison libc6-dev libffi-dev libgdbm-dev libncurses5-dev libsqlite3-dev libtool libyaml-dev make pkg-config sqlite3 zlib1g-dev libgmp-dev libreadline-dev libssl-dev -y && \
-  gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB && \
-  curl -sSL https://get.rvm.io | bash -s stable && \
-  /usr/local/rvm/bin/rvm install 2.6.3 && \
-  /usr/local/rvm/bin/rvm use 2.6.3 --default && \
-  apt-get install rubygems -y
+  rm -rf sfdx
 
 # Install Chrome WebDriver
 RUN CHROMEDRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE` && \
