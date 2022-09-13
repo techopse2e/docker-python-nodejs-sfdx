@@ -1,6 +1,6 @@
 FROM python:buster
 
-ARG DX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+ARG DX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
 # Install node prereqs, nodejs and yarn
 # Ref: https://deb.nodesource.com/setup_12.x
 # Ref: https://yarnpkg.com/en/docs/install
