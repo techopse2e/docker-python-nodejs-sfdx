@@ -15,9 +15,8 @@ RUN \
   npm i -g npm@^6 && \
   rm -rf /var/lib/apt/lists/* && \
   mkdir sfdx && \
-  wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1 && \
-  ./sfdx/install && \
-  rm -rf sfdx && \
+  wget -qO- $DX_CLI_URL | tar xJ -C ~/sfdx --strip-components 1 && \
+  echo "export PATH=~/sfdx/bin:$PATH" >> ~/.bashrc && \
   pip install requests xmltodict url-normalize
 
 # Install Google Chrome
