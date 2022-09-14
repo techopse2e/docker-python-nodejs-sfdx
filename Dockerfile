@@ -1,6 +1,6 @@
 FROM python:buster
 
-ENV PATH="~/sfdx/bin:${PATH}"
+ENV PATH="/root/sfdx/bin:${PATH}"
 
 ARG DX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
 # Install node prereqs, nodejs and yarn
@@ -17,7 +17,7 @@ RUN \
   npm i -g npm@^6 && \
   rm -rf /var/lib/apt/lists/* && \
   mkdir ~/sfdx && \
-  wget -qO- $DX_CLI_URL | tar xJ -C ~/sfdx --strip-components 1 && \
+  wget -qO- $DX_CLI_URL | tar xJ -C /root/sfdx --strip-components 1 && \
   pip install requests xmltodict url-normalize
 
 # Install Google Chrome
