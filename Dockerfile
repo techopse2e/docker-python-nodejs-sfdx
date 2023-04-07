@@ -1,28 +1,21 @@
-FROM python:buster
+FROM python:3.11.2-slim-bullseye
 
 ENV PATH="/root/sfdx/bin:${PATH}"
 
 ARG DX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
-# Install node prereqs, nodejs and yarn
-# Ref: https://deb.nodesource.com/setup_12.x
-# Ref: https://yarnpkg.com/en/docs/install
-RUN \
-  echo "deb https://deb.nodesource.com/node_12.x buster main" > /etc/apt/sources.list.d/nodesource.list && \
-  wget -qO- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
-  echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list && \
-  wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-  apt-get update && \
-  apt-get install -yqq nodejs yarn ffmpeg && \
-  pip install -U pip && pip install pipenv && \
-  npm i -g npm@^6 && \
-  rm -rf /var/lib/apt/lists/* && \
-  mkdir ~/sfdx && \
-  wget -qO- $DX_CLI_URL | tar xJ -C /root/sfdx --strip-components 1 && \
-  pip install requests xmltodict url-normalize
 
-# Install Google Chrome
-RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list && \
-    apt-get -yqq update && \
-    apt-get -yqq install google-chrome-stable && \
-    rm -rf /var/lib/apt/lists/*
+RUN \
+	apt-get update && \
+	apt-get install -y wget curl gpg git xz-utils && \
+	curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor > /usr/share/keyrings/nodejs-archive-keyring.gpg && \
+	echo "deb [signed-by=/usr/share/keyrings/nodejs-archive-keyring.gpg] https://deb.nodesource.com/node_18.x bullseye main" > /etc/apt/sources.list.d/nodejs.list && \
+	curl -s https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor > /usr/share/keyrings/yarn-archive-keyring.gpg && \
+	echo "deb [signed-by=/usr/share/keyrings/yarn-archive-keyring.gpg] https://dl.yarnpkg.com/debian stable main" > /etc/apt/sources.list.d/yarn.list && \
+	curl -s https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /usr/share/keyrings/google-archive-keyring.gpg && \
+	echo "deb [signed-by=/usr/share/keyrings/google-archive-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
+	apt-get update && \
+	apt-get install -y nodejs yarn google-chrome-stable ffmpeg && \
+	rm -rf /var/lib/apt/lists/* && \
+	pip install --no-cache-dir pipenv requests xmltodict url-normalize && \
+	mkdir /root/sfdx && \
+	wget --quiet --output-document=- $DX_CLI_URL | tar --extract --xz --directory=/root/sfdx --strip-components 1 \
